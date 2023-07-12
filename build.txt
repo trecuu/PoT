@@ -1,0 +1,3 @@
+displayName = Path of Terraria
+author = TrecUU & zeroTAG
+version = 0.1
