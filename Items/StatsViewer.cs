@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 using System.Collections.Generic;
+using PathOfTerraria.Systems;
 
 namespace PathOfTerraria.Items
 {
@@ -18,13 +19,11 @@ namespace PathOfTerraria.Items
 		{
 			var player = Main.LocalPlayer;
 			var modPlayer = player.GetModPlayer<Attributes>();
-			
-			tooltips.Add(new TooltipLine(Mod, "str", "Strength: " + modPlayer.str));
-			tooltips.Add(new TooltipLine(Mod, "dex", "Dexterity: " + modPlayer.dex));
-			tooltips.Add(new TooltipLine(Mod, "intel", "Intelligence: " + modPlayer.intel));
-			tooltips.Add(new TooltipLine(Mod, "wil", "Willpower: " + modPlayer.wil));
-			tooltips.Add(new TooltipLine(Mod, "vit", "Vitality: " + modPlayer.vit));
-			tooltips.Add(new TooltipLine(Mod, "exp", "Experience: " + modPlayer.exp));
+
+			foreach (var stat in modPlayer.attributes)
+			{
+				tooltips.Add(new TooltipLine(Mod, stat.name.ToLower(), stat.ToString()));
+			}
 		}
 	}
 }

@@ -3,11 +3,11 @@
 Items: {
 	Starforge: {
 		DisplayName: Starforge
-		Tooltip: ""
+		Tooltip: A basic sword, that does damage!
 	}
 
 	StatsViewer: {
 		DisplayName: Stats Viewer
-		Tooltip: ""
+		Tooltip: View your stats!
 	}
 }

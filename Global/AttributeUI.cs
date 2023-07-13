@@ -2,68 +2,70 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using Microsoft.Xna.Framework;
 using Terraria;
-using System.Collections.Generic;
+using PathOfTerraria.Systems;
 
-namespace PathOfTerraria
+namespace PathOfTerraria.UI
 {
-    public class AttributeUI : UIState
-    {
-        UIPanel attributePanel;
-        UIText attributeText;
-        Dictionary<string, UIText> attributeTexts = new Dictionary<string, UIText>();
+	public class AttributeUI : UIState
+	{
+		bool updated = false;
+		Attributes modPlayer;
 
-        public override void OnInitialize()
-        {
-            attributePanel = new UIPanel();
-            attributePanel.SetPadding(0);
-            attributePanel.Left.Set(600f, 0f);
-            attributePanel.Top.Set(20f, 0f);
+		public override void OnInitialize() {}
 
-            attributeText = new UIText("Attributes \n");
-            attributeText.Top.Set(10f, 0f);
-            attributeText.Left.Set(10f, 0f);
-            attributePanel.Append(attributeText);
+		private void firstUpdate() {
+			if (updated) return;
 
-            string[] attributeNames = { "Strength", "Dexterity", "Intelligence", "Vitality", "Willpower", "Experience" };
-            for (int i = 0; i < attributeNames.Length; i++)
-            {
-                var text = new UIText(attributeNames[i] + ": ");
-                text.Top.Set(10f + 20f * (i+1), 0f);
-                text.Left.Set(10f, 0f);
-                attributeTexts.Add(attributeNames[i], text);
-                attributePanel.Append(text);
-            }
+			// BUG: Why is the player not being initialized before OnInitialize?
+			modPlayer = Main.LocalPlayer.GetModPlayer<Attributes>();
 
-            attributePanel.Width.Set(attributeText.GetDimensions().Width + 50f, 0f);
-            // attributePanel.Height.Set(attributeText.GetDimensions().Height * 2 + 20f * (attributeNames.Length + 1), 0f);
-            attributePanel.Height.Set(attributeText.GetDimensions().Height * 2 + 20f * (attributeNames.Length), 0f);
+			UIPanel attrsPanel = new UIPanel();
+			UIText panelHeader = new UIText("Attributes");
+			var singleTextHeight = 20f;
 
-            Append(attributePanel);
-        }
+			// Initialize the Panel
+			{
+				attrsPanel.SetPadding(0);
+				attrsPanel.Left.Set(600f, 0f);
+				attrsPanel.Top.Set(20f, 0f);
+			}
 
-        public override void Update(GameTime gameTime)
-        {
-            var modPlayer = Main.LocalPlayer.GetModPlayer<Attributes>();
+			// Initialize the Text lines
+			{
+				panelHeader.Top.Set(10f, 0f);
+				panelHeader.Left.Set(10f, 0f);
+				attrsPanel.Append(panelHeader);
 
-            UpdateAttribute("Strength", modPlayer.str);
-            UpdateAttribute("Dexterity", modPlayer.dex);
-            UpdateAttribute("Intelligence", modPlayer.intel);
-            UpdateAttribute("Vitality", modPlayer.vit);
-            UpdateAttribute("Willpower", modPlayer.wil);
-            UpdateAttribute("Experience", modPlayer.exp);
+				int i = 1;
+				foreach (var stat in modPlayer.attributes)
+				{
+					UIText statText = new UIText(stat.name + ": " + stat.value);
+					statText.Top.Set(10f + (singleTextHeight * (i + 1)), 0f);
+					statText.Left.Set(10f, 0f);
+					attrsPanel.Append(statText);
+					i++;
+				}
+			}
 
-            base.Update(gameTime);
-        }
+			// Calculate the sizes
+			{
+				var fullWidth = 60f;
+				var fullHeight = (singleTextHeight * 2) + (modPlayer.attributes.Length * singleTextHeight);
+				attrsPanel.Width.Set(panelHeader.GetDimensions().Width + fullWidth, 0f);
+				attrsPanel.Height.Set(panelHeader.GetDimensions().Height + fullHeight, 0f);
+				attrsPanel.Activate();
+			}
 
-        private void UpdateAttribute(string attributeName, long value)
-        {
-            var text = attributeTexts[attributeName];
-            var newText = attributeName + ": " + value;
+			// Finish the panel
+			Append(attrsPanel);
 
-            if (text.Text != newText)
-            {
-                text.SetText(newText);
-            }
-        }
-    }
+			updated = true;
+		}
+
+		public override void Update(GameTime gameTime)
+		{
+			firstUpdate();
+			base.Update(gameTime);
+		}
+	}
 }

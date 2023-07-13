@@ -6,7 +6,7 @@ namespace PathOfTerraria.Items
 {
 	public class Starforge : ModItem
 	{
-        // The Display Name and Tooltip of this item can be edited in the Localization/en-US_Mods.PathOfTerraria.hjson file.
+		// The Display Name and Tooltip of this item can be edited in the Localization/en-US_Mods.PathOfTerraria.hjson file.
 
 		public override void SetDefaults()
 		{
